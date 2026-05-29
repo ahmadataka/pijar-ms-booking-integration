@@ -109,3 +109,26 @@ node src/scripts/buildOdooAccessPayloadPreview.js "2026-05-29T00:00:00Z" "2026-0
 ```
 
 Use `user-mappings.example.json` as the starting point for mapping Microsoft attendees to future Odoo user and partner IDs.
+
+## Odoo Setup
+
+Add these values to your local `.env`:
+
+```env
+ODOO_BASE_URL=
+ODOO_DATABASE=
+ODOO_LOGIN=
+ODOO_PASSWORD=
+```
+
+Fetch Odoo areas:
+
+```bash
+node src/scripts/fetchOdooAreas.js
+```
+
+Fetch Odoo contacts:
+
+```bash
+node src/scripts/fetchOdooContacts.js
+```

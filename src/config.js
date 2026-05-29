@@ -30,6 +30,12 @@ export const config = {
     clientSecret: process.env.MS_CLIENT_SECRET || "",
     roomListEmail: process.env.MS_ROOM_LIST_EMAIL || "",
     buildingName: process.env.MS_BUILDING_NAME || "Pijar Foundation HQ"
+  },
+  odoo: {
+    baseUrl: process.env.ODOO_BASE_URL || "",
+    database: process.env.ODOO_DATABASE || "",
+    login: process.env.ODOO_LOGIN || "",
+    password: process.env.ODOO_PASSWORD || ""
   }
 };
 
@@ -38,5 +44,14 @@ export function hasMicrosoftCredentials() {
     config.microsoft.tenantId &&
       config.microsoft.clientId &&
       config.microsoft.clientSecret
+  );
+}
+
+export function hasOdooCredentials() {
+  return Boolean(
+    config.odoo.baseUrl &&
+      config.odoo.database &&
+      config.odoo.login &&
+      config.odoo.password
   );
 }
