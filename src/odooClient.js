@@ -28,3 +28,26 @@ export async function odooGet(path, params = {}) {
 
   return json.data;
 }
+
+export async function odooPost(path, payload) {
+  const token = await getOdooAccessToken();
+  const response = await fetch(buildUrl(path), {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const json = await response.json().catch(() => ({}));
+  if (!response.ok || !json?.success) {
+    throw new Error(
+      `Odoo POST ${path} failed: ${json?.message || response.statusText} :: ${JSON.stringify(
+        json?.data ?? {}
+      )}`
+    );
+  }
+
+  return json.data;
+}

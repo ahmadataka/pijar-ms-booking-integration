@@ -110,6 +110,48 @@ node src/scripts/buildOdooAccessPayloadPreview.js "2026-05-29T00:00:00Z" "2026-0
 
 Use `user-mappings.example.json` as the starting point for mapping Microsoft attendees to future Odoo user and partner IDs.
 
+Build a preview of the `POST /api/v1/bookings` payloads that would be sent to Odoo:
+
+```bash
+node src/scripts/buildOdooBookingPayloadPreview.js <startIso> <endIso>
+```
+
+Example:
+
+```bash
+node src/scripts/buildOdooBookingPayloadPreview.js "2026-05-29T00:00:00Z" "2026-06-01T00:00:00Z"
+```
+
+Dry-run one room sync into Odoo bookings:
+
+```bash
+node src/scripts/syncBookingToOdoo.js <roomEmail> <startIso> <endIso>
+```
+
+Example:
+
+```bash
+node src/scripts/syncBookingToOdoo.js "Majapahit-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com" "2026-05-29T00:00:00Z" "2026-06-01T00:00:00Z"
+```
+
+Execute the real create call only when you are ready:
+
+```bash
+node src/scripts/syncBookingToOdoo.js "Majapahit-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com" "2026-05-29T00:00:00Z" "2026-06-01T00:00:00Z" --execute
+```
+
+Test a minimal Odoo booking create payload with a future datetime:
+
+```bash
+node src/scripts/createMinimalOdooBookingTest.js <roomId> <organizerId> <startDatetime> <endDatetime>
+```
+
+Example:
+
+```bash
+node src/scripts/createMinimalOdooBookingTest.js 2 87 "2026-05-30 09:00:00" "2026-05-30 11:00:00"
+```
+
 ## Odoo Setup
 
 Add these values to your local `.env`:
