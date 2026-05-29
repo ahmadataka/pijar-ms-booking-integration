@@ -1,0 +1,94 @@
+{
+  "rooms": [
+    {
+      "microsoftRoomEmail": "Majapahit-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com",
+      "microsoftDisplayName": "Majapahit -JKT-PIJAR HQ",
+      "odooRoomId": null,
+      "odooRoomName": null,
+      "controllerId": null,
+      "site": "Pijar Foundation HQ",
+      "floor": "Ground Floor"
+    },
+    {
+      "microsoftRoomEmail": "Mataram-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com",
+      "microsoftDisplayName": "Mataram -JKT-PIJAR HQ",
+      "odooRoomId": null,
+      "odooRoomName": null,
+      "controllerId": null,
+      "site": "Pijar Foundation HQ",
+      "floor": "Ground Floor"
+    },
+    {
+      "microsoftRoomEmail": "Pajajaran-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com",
+      "microsoftDisplayName": "Pajajaran -JKT-PIJAR HQ",
+      "odooRoomId": null,
+      "odooRoomName": null,
+      "controllerId": null,
+      "site": "Pijar Foundation HQ",
+      "floor": "Ground Floor"
+    },
+    {
+      "microsoftRoomEmail": "RuangTamu@yayasanpijarmasadepan.onmicrosoft.com",
+      "microsoftDisplayName": "Ruang Tamu",
+      "odooRoomId": null,
+      "odooRoomName": null,
+      "controllerId": null,
+      "site": "Pijar Foundation HQ",
+      "floor": "Ground Floor"
+    },
+    {
+      "microsoftRoomEmail": "SamuderaPasai-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com",
+      "microsoftDisplayName": "Samudera Pasai -JKT-PIJAR HQ",
+      "odooRoomId": null,
+      "odooRoomName": null,
+      "controllerId": null,
+      "site": "Pijar Foundation HQ",
+      "floor": "Ground Floor"
+    },
+    {
+      "microsoftRoomEmail": "Singhasari-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com",
+      "microsoftDisplayName": "Singhasari -JKT-PIJAR HQ",
+      "odooRoomId": null,
+      "odooRoomName": null,
+      "controllerId": null,
+      "site": "Pijar Foundation HQ",
+      "floor": "Ground Floor"
+    },
+    {
+      "microsoftRoomEmail": "Sriwijaya-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com",
+      "microsoftDisplayName": "Sriwijaya -JKT-PIJAR HQ",
+      "odooRoomId": null,
+      "odooRoomName": null,
+      "controllerId": null,
+      "site": "Pijar Foundation HQ",
+      "floor": "Ground Floor"
+    },
+    {
+      "microsoftRoomEmail": "Tarumanagara-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com",
+      "microsoftDisplayName": "Tarumanagara -JKT-PIJAR HQ",
+      "odooRoomId": null,
+      "odooRoomName": null,
+      "controllerId": null,
+      "site": "Pijar Foundation HQ",
+      "floor": "Ground Floor"
+    },
+    {
+      "microsoftRoomEmail": "Ternate-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com",
+      "microsoftDisplayName": "Ternate -JKT-PIJAR HQ",
+      "odooRoomId": null,
+      "odooRoomName": null,
+      "controllerId": null,
+      "site": "Pijar Foundation HQ",
+      "floor": "Ground Floor"
+    },
+    {
+      "microsoftRoomEmail": "Tidore-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com",
+      "microsoftDisplayName": "Tidore -JKT-PIJAR HQ",
+      "odooRoomId": null,
+      "odooRoomName": null,
+      "controllerId": null,
+      "site": "Pijar Foundation HQ",
+      "floor": "Ground Floor"
+    }
+  ]
+}
