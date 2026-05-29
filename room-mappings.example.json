@@ -3,11 +3,11 @@
     {
       "microsoftRoomEmail": "Majapahit-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com",
       "microsoftDisplayName": "Majapahit -JKT-PIJAR HQ",
-      "odooRoomId": null,
-      "odooRoomName": null,
+      "odooRoomId": 2,
+      "odooRoomName": "Majapahit Meeting Room (VIP)",
       "controllerId": null,
       "site": "Pijar Foundation HQ",
-      "floor": "Ground Floor"
+      "floor": "1st Floor"
     },
     {
       "microsoftRoomEmail": "Mataram-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com",
@@ -21,11 +21,11 @@
     {
       "microsoftRoomEmail": "Pajajaran-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com",
       "microsoftDisplayName": "Pajajaran -JKT-PIJAR HQ",
-      "odooRoomId": null,
-      "odooRoomName": null,
+      "odooRoomId": 16,
+      "odooRoomName": "Padjajaran Meeting Room",
       "controllerId": null,
       "site": "Pijar Foundation HQ",
-      "floor": "Ground Floor"
+      "floor": "2nd Floor"
     },
     {
       "microsoftRoomEmail": "RuangTamu@yayasanpijarmasadepan.onmicrosoft.com",
@@ -39,29 +39,29 @@
     {
       "microsoftRoomEmail": "SamuderaPasai-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com",
       "microsoftDisplayName": "Samudera Pasai -JKT-PIJAR HQ",
-      "odooRoomId": null,
-      "odooRoomName": null,
+      "odooRoomId": 15,
+      "odooRoomName": "Samudera Pasai Meeting Room",
       "controllerId": null,
       "site": "Pijar Foundation HQ",
-      "floor": "Ground Floor"
+      "floor": "2nd Floor"
     },
     {
       "microsoftRoomEmail": "Singhasari-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com",
       "microsoftDisplayName": "Singhasari -JKT-PIJAR HQ",
-      "odooRoomId": null,
-      "odooRoomName": null,
+      "odooRoomId": 14,
+      "odooRoomName": "Singhasari Meeting Room",
       "controllerId": null,
       "site": "Pijar Foundation HQ",
-      "floor": "Ground Floor"
+      "floor": "2nd Floor"
     },
     {
       "microsoftRoomEmail": "Sriwijaya-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com",
       "microsoftDisplayName": "Sriwijaya -JKT-PIJAR HQ",
-      "odooRoomId": null,
-      "odooRoomName": null,
+      "odooRoomId": 7,
+      "odooRoomName": "Sriwijaya Auditorium",
       "controllerId": null,
       "site": "Pijar Foundation HQ",
-      "floor": "Ground Floor"
+      "floor": "1st Floor"
     },
     {
       "microsoftRoomEmail": "Tarumanagara-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com",
@@ -75,20 +75,20 @@
     {
       "microsoftRoomEmail": "Ternate-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com",
       "microsoftDisplayName": "Ternate -JKT-PIJAR HQ",
-      "odooRoomId": null,
-      "odooRoomName": null,
+      "odooRoomId": 9,
+      "odooRoomName": "Ternate Meeting Room",
       "controllerId": null,
       "site": "Pijar Foundation HQ",
-      "floor": "Ground Floor"
+      "floor": "1st Floor"
     },
     {
       "microsoftRoomEmail": "Tidore-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com",
       "microsoftDisplayName": "Tidore -JKT-PIJAR HQ",
-      "odooRoomId": null,
-      "odooRoomName": null,
+      "odooRoomId": 11,
+      "odooRoomName": "Tidore Meeting Room",
       "controllerId": null,
       "site": "Pijar Foundation HQ",
-      "floor": "Ground Floor"
+      "floor": "1st Floor"
     }
   ]
 }

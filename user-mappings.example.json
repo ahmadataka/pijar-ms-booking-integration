@@ -4,21 +4,21 @@
       "microsoftEmail": "atik@pijarfoundation.org",
       "displayName": "Atik Handayani",
       "odooUserId": null,
-      "odooPartnerId": null,
+      "odooPartnerId": 87,
       "employeeId": null
     },
     {
       "microsoftEmail": "cazadira@pijarfoundation.org",
       "displayName": "Cazadira Fediva Tamzil",
       "odooUserId": null,
-      "odooPartnerId": null,
+      "odooPartnerId": 79,
       "employeeId": null
     },
     {
       "microsoftEmail": "anthony@pijarfoundation.org",
       "displayName": "Anthony M. Dermawan",
       "odooUserId": null,
-      "odooPartnerId": null,
+      "odooPartnerId": 72,
       "employeeId": null
     }
   ]
