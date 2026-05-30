@@ -140,6 +140,32 @@ Execute the real create call only when you are ready:
 node src/scripts/syncBookingToOdoo.js "Majapahit-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com" "2026-05-29T00:00:00Z" "2026-06-01T00:00:00Z" --execute
 ```
 
+Run an end-to-end sync for one room with local sync-state tracking:
+
+```bash
+node src/scripts/runSingleRoomSync.js <roomEmail> <startIso> <endIso>
+```
+
+Example:
+
+```bash
+node src/scripts/runSingleRoomSync.js "Majapahit-JKT-PIJARHQ@yayasanpijarmasadepan.onmicrosoft.com" "2026-05-29T00:00:00Z" "2026-06-01T00:00:00Z"
+```
+
+Add `--execute` to apply create/update/delete actions and persist sync state locally in `data/sync-state.json`.
+
+Delete an Odoo booking created for testing:
+
+```bash
+node src/scripts/deleteOdooBooking.js <bookingId>
+```
+
+Example:
+
+```bash
+node src/scripts/deleteOdooBooking.js 192 --execute
+```
+
 Test a minimal Odoo booking create payload with a future datetime:
 
 ```bash
@@ -151,6 +177,20 @@ Example:
 ```bash
 node src/scripts/createMinimalOdooBookingTest.js 2 87 "2026-05-30 09:00:00" "2026-05-30 11:00:00"
 ```
+
+Test an Odoo booking create payload with guest attendees:
+
+```bash
+node src/scripts/createOdooBookingWithGuestsTest.js <roomId> <organizerId> <startDatetime> <endDatetime> <guestIdsCsv>
+```
+
+Example:
+
+```bash
+node src/scripts/createOdooBookingWithGuestsTest.js 2 87 "2026-05-30 13:00:00" "2026-05-30 15:00:00" "87,79,72"
+```
+
+Add `--execute` only when the dry-run looks correct.
 
 ## Odoo Setup
 

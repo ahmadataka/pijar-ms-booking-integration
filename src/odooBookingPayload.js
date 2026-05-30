@@ -33,6 +33,8 @@ export function buildOdooBookingPayload(payloadRoom) {
           microsoftEventId: booking.microsoftEventId,
           iCalUId: booking.iCalUId
         },
+        lastModifiedDateTime: booking.lastModifiedDateTime || null,
+        isCancelled: Boolean(booking.isCancelled),
         ready: Boolean(payloadRoom.odooRoomId && booking.organizer.odooPartnerId),
         missing: {
           room: !payloadRoom.odooRoomId,
