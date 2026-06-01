@@ -1,4 +1,4 @@
-import { odooDelete, odooGet, odooPatch, odooPost } from "./odooClient.js";
+import { odooDelete, odooGet, odooPatch, odooPost, odooPut } from "./odooClient.js";
 
 const MICROSOFT_SYNC_PREFIX = "Synced from Microsoft booking ";
 
@@ -38,7 +38,19 @@ export async function deleteOdooBooking(bookingId) {
 }
 
 export async function updateOdooBooking(bookingId, payload) {
-  return odooPatch(`/api/v1/bookings/${bookingId}`, payload);
+  const path = `/api/v1/bookings/${bookingId}`;
+
+  try {
+    return await odooPatch(path, payload);
+  } catch (patchError) {
+    try {
+      return await odooPut(path, payload);
+    } catch (putError) {
+      throw new Error(
+        `Odoo update ${path} failed via PATCH and PUT.\nPATCH: ${patchError.message}\nPUT: ${putError.message}`
+      );
+    }
+  }
 }
 
 export async function fetchOdooBookings(params = {}) {

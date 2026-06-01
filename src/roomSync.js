@@ -160,10 +160,11 @@ export async function syncSingleRoom({
           odooBookingId: existing.odooBookingId
         });
         if (execute) {
-          const response = await deleteOdooBooking(existing.odooBookingId);
-          removeSyncStateBooking(state, booking.source.microsoftEventId);
-          actions[actions.length - 1].response = response;
-        }
+        const response = await deleteOdooBooking(existing.odooBookingId);
+        removeSyncStateBooking(state, booking.source.microsoftEventId);
+        await saveSyncState(state);
+        actions[actions.length - 1].response = response;
+      }
       } else {
         actions.push({
           action: "skip",
@@ -191,6 +192,7 @@ export async function syncSingleRoom({
             odooBookingId
           })
         );
+        await saveSyncState(state);
         actions[actions.length - 1].response = response;
       }
       continue;
@@ -213,6 +215,7 @@ export async function syncSingleRoom({
             odooBookingId: existing.odooBookingId
           })
         );
+        await saveSyncState(state);
         actions[actions.length - 1].response = response;
       }
       continue;
@@ -223,10 +226,6 @@ export async function syncSingleRoom({
       source: booking.source,
       odooBookingId: existing.odooBookingId
     });
-  }
-
-  if (execute) {
-    await saveSyncState(state);
   }
 
   return {

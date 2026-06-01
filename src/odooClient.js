@@ -95,3 +95,26 @@ export async function odooPatch(path, payload) {
 
   return json.data;
 }
+
+export async function odooPut(path, payload) {
+  const token = await getOdooAccessToken();
+  const response = await fetch(buildUrl(path), {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const json = await response.json().catch(() => ({}));
+  if (!response.ok || !json?.success) {
+    throw new Error(
+      `Odoo PUT ${path} failed: ${json?.message || response.statusText} :: ${JSON.stringify(
+        json?.data ?? {}
+      )}`
+    );
+  }
+
+  return json.data;
+}
