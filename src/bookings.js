@@ -1,3 +1,4 @@
+import { config } from "./config.js";
 import { graphGet } from "./graphClient.js";
 
 function normalizeAttendee(attendee) {
@@ -45,7 +46,11 @@ function buildCalendarViewPath(roomEmail, startIso, endIso) {
 
 export async function fetchRoomBookings(roomEmail, startIso, endIso) {
   const path = buildCalendarViewPath(roomEmail, startIso, endIso);
-  const result = await graphGet(path);
+  const result = await graphGet(path, {
+    headers: {
+      Prefer: `outlook.timezone="${config.microsoft.timeZone}"`
+    }
+  });
   const items = Array.isArray(result.value) ? result.value : [];
 
   return items.map((event) => normalizeBooking(event, roomEmail));

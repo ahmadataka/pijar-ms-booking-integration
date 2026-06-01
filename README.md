@@ -197,11 +197,14 @@ Add `--execute` only when the dry-run looks correct.
 Add these values to your local `.env`:
 
 ```env
+MS_TIME_ZONE=SE Asia Standard Time
 ODOO_BASE_URL=
 ODOO_DATABASE=
 ODOO_LOGIN=
 ODOO_PASSWORD=
 ```
+
+`MS_TIME_ZONE` is used when fetching Microsoft calendar events so room bookings are normalized in the intended local business timezone before being sent to Odoo.
 
 Fetch Odoo areas:
 

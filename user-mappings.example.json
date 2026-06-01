@@ -1,6 +1,13 @@
 {
   "users": [
     {
+      "microsoftEmail": "ataka@pijarfoundation.org",
+      "displayName": "Ataka",
+      "odooUserId": null,
+      "odooPartnerId": 56,
+      "employeeId": null
+    },
+    {
       "microsoftEmail": "atik@pijarfoundation.org",
       "displayName": "Atik Handayani",
       "odooUserId": null,
@@ -19,6 +26,13 @@
       "displayName": "Anthony M. Dermawan",
       "odooUserId": null,
       "odooPartnerId": 72,
+      "employeeId": null
+    },
+    {
+      "microsoftEmail": "hilwah@pijarfoundation.org",
+      "displayName": "Hilwah",
+      "odooUserId": null,
+      "odooPartnerId": null,
       "employeeId": null
     }
   ]

@@ -1,18 +1,20 @@
 function toOdooDatetime(dateTime, timeZone) {
   if (!dateTime) return null;
-  const source = timeZone && timeZone !== "UTC" ? `${dateTime} ${timeZone}` : `${dateTime}Z`;
-  const date = new Date(source);
-  if (Number.isNaN(date.getTime())) {
-    return dateTime.replace("T", " ").slice(0, 19);
+
+  if (/([zZ]|[+-]\d{2}:\d{2})$/.test(dateTime)) {
+    const date = new Date(dateTime);
+    if (!Number.isNaN(date.getTime())) {
+      const yyyy = date.getUTCFullYear();
+      const mm = String(date.getUTCMonth() + 1).padStart(2, "0");
+      const dd = String(date.getUTCDate()).padStart(2, "0");
+      const hh = String(date.getUTCHours()).padStart(2, "0");
+      const mi = String(date.getUTCMinutes()).padStart(2, "0");
+      const ss = String(date.getUTCSeconds()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
+    }
   }
 
-  const yyyy = date.getUTCFullYear();
-  const mm = String(date.getUTCMonth() + 1).padStart(2, "0");
-  const dd = String(date.getUTCDate()).padStart(2, "0");
-  const hh = String(date.getUTCHours()).padStart(2, "0");
-  const mi = String(date.getUTCMinutes()).padStart(2, "0");
-  const ss = String(date.getUTCSeconds()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
+  return dateTime.replace("T", " ").slice(0, 19);
 }
 
 function dedupePartnerIds(values) {

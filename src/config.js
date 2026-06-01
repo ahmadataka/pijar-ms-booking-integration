@@ -29,7 +29,8 @@ export const config = {
     clientId: process.env.MS_CLIENT_ID || "",
     clientSecret: process.env.MS_CLIENT_SECRET || "",
     roomListEmail: process.env.MS_ROOM_LIST_EMAIL || "",
-    buildingName: process.env.MS_BUILDING_NAME || "Pijar Foundation HQ"
+    buildingName: process.env.MS_BUILDING_NAME || "Pijar Foundation HQ",
+    timeZone: process.env.MS_TIME_ZONE || "SE Asia Standard Time"
   },
   odoo: {
     baseUrl: process.env.ODOO_BASE_URL || "",

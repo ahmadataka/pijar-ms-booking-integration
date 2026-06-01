@@ -5,6 +5,7 @@ import { buildOdooBookingPayload } from "./odooBookingPayload.js";
 import {
   createOdooBooking,
   deleteOdooBooking,
+  fetchOdooBookings,
   updateOdooBooking
 } from "./odooBookings.js";
 import {
@@ -30,17 +31,72 @@ function buildStateEntry({ roomEmail, booking, odooBookingId }) {
     iCalUId: booking.source.iCalUId,
     odooBookingId,
     lastModifiedDateTime: booking.lastModifiedDateTime || null,
+    requestFingerprint: buildRequestFingerprint(booking.request),
     subject: booking.request.name || null,
     isCancelled: Boolean(booking.request.state === "cancelled" || booking.isCancelled),
     lastSyncedAt: new Date().toISOString()
   };
 }
 
+function buildRequestFingerprint(request) {
+  if (!request) return null;
+  const guestContactIds = Array.isArray(request.guest_contact_ids)
+    ? [...request.guest_contact_ids].sort((a, b) => a - b)
+    : [];
+
+  return JSON.stringify({
+    room_id: request.room_id ?? null,
+    organizer_id: request.organizer_id ?? null,
+    start_datetime: request.start_datetime ?? null,
+    end_datetime: request.end_datetime ?? null,
+    description: request.description ?? null,
+    guest_contact_ids: guestContactIds
+  });
+}
+
 function needsUpdate(existing, booking) {
+  const nextFingerprint = buildRequestFingerprint(booking.request);
+  if ((existing.requestFingerprint || null) !== nextFingerprint) {
+    return true;
+  }
+
   return (
     !existing ||
     existing.lastModifiedDateTime !== (booking.lastModifiedDateTime || null)
   );
+}
+
+function indexOdooBookingsByMicrosoftEventId(bookings) {
+  const index = new Map();
+  for (const booking of bookings) {
+    if (booking.microsoftEventId) {
+      index.set(booking.microsoftEventId, booking);
+    }
+  }
+  return index;
+}
+
+function buildFallbackStateEntry(roomEmail, booking) {
+  if (!booking) return null;
+
+  return {
+    roomEmail,
+    microsoftEventId: booking.microsoftEventId,
+    iCalUId: null,
+    odooBookingId: booking.id,
+    lastModifiedDateTime: null,
+    requestFingerprint: buildRequestFingerprint({
+      room_id: booking.roomId,
+      organizer_id: booking.organizerId,
+      start_datetime: booking.startDatetime,
+      end_datetime: booking.endDatetime,
+      description: booking.description,
+      guest_contact_ids: booking.guestContactIds
+    }),
+    subject: booking.name || null,
+    isCancelled: false,
+    lastSyncedAt: null
+  };
 }
 
 export async function syncSingleRoom({
@@ -61,10 +117,20 @@ export async function syncSingleRoom({
   const bookingPayload = buildOdooBookingPayload(accessPayload);
   const state = await loadSyncState();
   const stateByEventId = indexSyncStateByMicrosoftEventId(state);
+  const odooBookings =
+    roomMapping?.odooRoomId != null ? await fetchOdooBookings() : [];
+  const odooBookingsByEventId = indexOdooBookingsByMicrosoftEventId(
+    odooBookings.filter((item) => item.roomId === roomMapping?.odooRoomId)
+  );
 
   const actions = [];
   for (const booking of bookingPayload.bookings) {
-    const existing = stateByEventId.get(booking.source.microsoftEventId);
+    const fallback = buildFallbackStateEntry(
+      room.emailAddress,
+      odooBookingsByEventId.get(booking.source.microsoftEventId)
+    );
+    const existing =
+      stateByEventId.get(booking.source.microsoftEventId) || fallback;
 
     if (!booking.ready) {
       actions.push({

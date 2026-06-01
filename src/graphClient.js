@@ -2,14 +2,17 @@ import { getMicrosoftAccessToken } from "./graphAuth.js";
 
 const GRAPH_BASE = "https://graph.microsoft.com/v1.0";
 
-export async function graphGet(path) {
+export async function graphGet(path, options = {}) {
   const token = await getMicrosoftAccessToken();
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    Accept: "application/json",
+    ...(options.headers || {})
+  };
 
   const response = await fetch(`${GRAPH_BASE}${path}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/json"
-    }
+    ...options,
+    headers
   });
 
   if (!response.ok) {
