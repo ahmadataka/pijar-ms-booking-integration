@@ -220,12 +220,14 @@ export async function syncSingleRoom({
             })
           );
         } catch (updateError) {
-          const created = await createOdooBooking(booking.request);
-          const newOdooBookingId = created?.schedule?.id || null;
-
           if (existing.odooBookingId) {
             await deleteOdooBooking(existing.odooBookingId);
+            removeSyncStateBooking(state, booking.source.microsoftEventId);
+            await saveSyncState(state);
           }
+
+          const created = await createOdooBooking(booking.request);
+          const newOdooBookingId = created?.schedule?.id || null;
 
           response = {
             replacement: {
