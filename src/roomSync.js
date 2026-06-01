@@ -38,6 +38,12 @@ function buildStateEntry({ roomEmail, booking, odooBookingId }) {
   };
 }
 
+function wrapActionError(message, details = {}) {
+  return new Error(
+    `${message}\n${JSON.stringify(details, null, 2)}`
+  );
+}
+
 function buildRequestFingerprint(request) {
   if (!request) return null;
   const guestContactIds = Array.isArray(request.guest_contact_ids)
@@ -182,7 +188,16 @@ export async function syncSingleRoom({
         request: booking.request
       });
       if (execute) {
-        const response = await createOdooBooking(booking.request);
+        let response;
+        try {
+          response = await createOdooBooking(booking.request);
+        } catch (error) {
+          throw wrapActionError("Odoo create failed during sync", {
+            source: booking.source,
+            request: booking.request,
+            originalError: error.message
+          });
+        }
         const odooBookingId = response?.schedule?.id || null;
         upsertSyncStateBooking(
           state,
@@ -226,7 +241,18 @@ export async function syncSingleRoom({
             await saveSyncState(state);
           }
 
-          const created = await createOdooBooking(booking.request);
+          let created;
+          try {
+            created = await createOdooBooking(booking.request);
+          } catch (createError) {
+            throw wrapActionError("Odoo replacement create failed during sync", {
+              source: booking.source,
+              request: booking.request,
+              deletedOdooBookingId: existing.odooBookingId,
+              updateError: updateError.message,
+              createError: createError.message
+            });
+          }
           const newOdooBookingId = created?.schedule?.id || null;
 
           response = {
