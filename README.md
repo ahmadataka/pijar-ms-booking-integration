@@ -154,6 +154,20 @@ node src/scripts/runSingleRoomSync.js "Majapahit-JKT-PIJARHQ@yayasanpijarmasadep
 
 Add `--execute` to apply create/update/delete actions and persist sync state locally in `data/sync-state.json`.
 
+Run an end-to-end sync across all mapped rooms:
+
+```bash
+node src/scripts/runMappedRoomsSync.js <startIso> <endIso>
+```
+
+Example:
+
+```bash
+node src/scripts/runMappedRoomsSync.js "2026-06-01T00:00:00Z" "2026-06-03T00:00:00Z"
+```
+
+Add `--execute` to apply the actions. By default, this only includes rooms that already have an `odooRoomId` mapping. Add `--include-unmapped` if you want the report to include skipped unmapped rooms too.
+
 Delete an Odoo booking created for testing:
 
 ```bash
