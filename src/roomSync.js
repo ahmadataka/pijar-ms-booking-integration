@@ -200,21 +200,50 @@ export async function syncSingleRoom({
 
     if (existing.odooBookingId && needsUpdate(existing, booking)) {
       actions.push({
-        action: "update",
+        action: "replace",
         source: booking.source,
         odooBookingId: existing.odooBookingId,
         request: booking.request
       });
       if (execute) {
-        const response = await updateOdooBooking(existing.odooBookingId, booking.request);
-        upsertSyncStateBooking(
-          state,
-          buildStateEntry({
-            roomEmail: room.emailAddress,
-            booking,
-            odooBookingId: existing.odooBookingId
-          })
-        );
+        let response;
+
+        try {
+          response = await updateOdooBooking(existing.odooBookingId, booking.request);
+          actions[actions.length - 1].updateStrategy = "patch-or-put";
+          upsertSyncStateBooking(
+            state,
+            buildStateEntry({
+              roomEmail: room.emailAddress,
+              booking,
+              odooBookingId: existing.odooBookingId
+            })
+          );
+        } catch (updateError) {
+          const created = await createOdooBooking(booking.request);
+          const newOdooBookingId = created?.schedule?.id || null;
+
+          if (existing.odooBookingId) {
+            await deleteOdooBooking(existing.odooBookingId);
+          }
+
+          response = {
+            replacement: {
+              create: created,
+              deletedOdooBookingId: existing.odooBookingId,
+              updateError: updateError.message
+            }
+          };
+          actions[actions.length - 1].updateStrategy = "create-then-delete";
+          upsertSyncStateBooking(
+            state,
+            buildStateEntry({
+              roomEmail: room.emailAddress,
+              booking,
+              odooBookingId: newOdooBookingId
+            })
+          );
+        }
         await saveSyncState(state);
         actions[actions.length - 1].response = response;
       }
