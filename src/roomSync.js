@@ -163,14 +163,9 @@ export async function syncSingleRoom({
         actions.push({
           action: "delete",
           source: booking.source,
-          odooBookingId: existing.odooBookingId
+          odooBookingId: existing.odooBookingId,
+          existing
         });
-        if (execute) {
-        const response = await deleteOdooBooking(existing.odooBookingId);
-        removeSyncStateBooking(state, booking.source.microsoftEventId);
-        await saveSyncState(state);
-        actions[actions.length - 1].response = response;
-      }
       } else {
         actions.push({
           action: "skip",
@@ -185,31 +180,9 @@ export async function syncSingleRoom({
       actions.push({
         action: "create",
         source: booking.source,
-        request: booking.request
+        request: booking.request,
+        booking
       });
-      if (execute) {
-        let response;
-        try {
-          response = await createOdooBooking(booking.request);
-        } catch (error) {
-          throw wrapActionError("Odoo create failed during sync", {
-            source: booking.source,
-            request: booking.request,
-            originalError: error.message
-          });
-        }
-        const odooBookingId = response?.schedule?.id || null;
-        upsertSyncStateBooking(
-          state,
-          buildStateEntry({
-            roomEmail: room.emailAddress,
-            booking,
-            odooBookingId
-          })
-        );
-        await saveSyncState(state);
-        actions[actions.length - 1].response = response;
-      }
       continue;
     }
 
@@ -218,63 +191,10 @@ export async function syncSingleRoom({
         action: "replace",
         source: booking.source,
         odooBookingId: existing.odooBookingId,
-        request: booking.request
+        request: booking.request,
+        booking,
+        existing
       });
-      if (execute) {
-        let response;
-
-        try {
-          response = await updateOdooBooking(existing.odooBookingId, booking.request);
-          actions[actions.length - 1].updateStrategy = "patch-or-put";
-          upsertSyncStateBooking(
-            state,
-            buildStateEntry({
-              roomEmail: room.emailAddress,
-              booking,
-              odooBookingId: existing.odooBookingId
-            })
-          );
-        } catch (updateError) {
-          if (existing.odooBookingId) {
-            await deleteOdooBooking(existing.odooBookingId);
-            removeSyncStateBooking(state, booking.source.microsoftEventId);
-            await saveSyncState(state);
-          }
-
-          let created;
-          try {
-            created = await createOdooBooking(booking.request);
-          } catch (createError) {
-            throw wrapActionError("Odoo replacement create failed during sync", {
-              source: booking.source,
-              request: booking.request,
-              deletedOdooBookingId: existing.odooBookingId,
-              updateError: updateError.message,
-              createError: createError.message
-            });
-          }
-          const newOdooBookingId = created?.schedule?.id || null;
-
-          response = {
-            replacement: {
-              create: created,
-              deletedOdooBookingId: existing.odooBookingId,
-              updateError: updateError.message
-            }
-          };
-          actions[actions.length - 1].updateStrategy = "create-then-delete";
-          upsertSyncStateBooking(
-            state,
-            buildStateEntry({
-              roomEmail: room.emailAddress,
-              booking,
-              odooBookingId: newOdooBookingId
-            })
-          );
-        }
-        await saveSyncState(state);
-        actions[actions.length - 1].response = response;
-      }
       continue;
     }
 
@@ -283,6 +203,57 @@ export async function syncSingleRoom({
       source: booking.source,
       odooBookingId: existing.odooBookingId
     });
+  }
+
+  if (execute) {
+    const deleteActions = actions.filter((item) => item.action === "delete");
+    const replaceActions = actions.filter((item) => item.action === "replace");
+    const createActions = actions.filter((item) => item.action === "create");
+
+    for (const action of deleteActions) {
+      const response = await deleteOdooBooking(action.odooBookingId);
+      removeSyncStateBooking(state, action.source.microsoftEventId);
+      await saveSyncState(state);
+      action.response = response;
+    }
+
+    for (const action of replaceActions) {
+      if (action.odooBookingId) {
+        const response = await deleteOdooBooking(action.odooBookingId);
+        removeSyncStateBooking(state, action.source.microsoftEventId);
+        await saveSyncState(state);
+        action.deleteResponse = response;
+      }
+    }
+
+    for (const action of [...replaceActions, ...createActions]) {
+      let response;
+      try {
+        response = await createOdooBooking(action.request);
+      } catch (error) {
+        throw wrapActionError("Odoo create failed during sync", {
+          action: action.action,
+          source: action.source,
+          request: action.request,
+          originalError: error.message
+        });
+      }
+
+      const odooBookingId = response?.schedule?.id || null;
+      upsertSyncStateBooking(
+        state,
+        buildStateEntry({
+          roomEmail: room.emailAddress,
+          booking: action.booking,
+          odooBookingId
+        })
+      );
+      await saveSyncState(state);
+      action.response = response;
+      if (action.action === "replace") {
+        action.updateStrategy = "delete-then-create";
+      }
+    }
   }
 
   return {
