@@ -1,5 +1,6 @@
 import http from "node:http";
-import { config, hasMicrosoftCredentials } from "./config.js";
+import { config, hasMicrosoftCredentials, hasOdooCredentials } from "./config.js";
+import { loadLastProductionSyncResult, runProductionSync } from "./productionSync.js";
 
 function sendJson(res, status, payload) {
   const body = JSON.stringify(payload, null, 2);
@@ -10,12 +11,13 @@ function sendJson(res, status, payload) {
   res.end(body);
 }
 
-const server = http.createServer((req, res) => {
+async function handleRequest(req, res) {
   if (req.url === "/health") {
     return sendJson(res, 200, {
       ok: true,
       service: "pijar-ms-booking-integration",
-      microsoftConfigured: hasMicrosoftCredentials()
+      microsoftConfigured: hasMicrosoftCredentials(),
+      odooConfigured: hasOdooCredentials()
     });
   }
 
@@ -25,13 +27,47 @@ const server = http.createServer((req, res) => {
       port: config.port,
       buildingName: config.microsoft.buildingName,
       roomListConfigured: Boolean(config.microsoft.roomListEmail),
-      microsoftConfigured: hasMicrosoftCredentials()
+      microsoftConfigured: hasMicrosoftCredentials(),
+      odooConfigured: hasOdooCredentials(),
+      syncLookbackDays: config.sync.lookbackDays,
+      syncLookaheadDays: config.sync.lookaheadDays
+    });
+  }
+
+  if (req.url === "/sync/last-run") {
+    const lastRun = await loadLastProductionSyncResult();
+    return sendJson(res, 200, {
+      ok: true,
+      lastRun
+    });
+  }
+
+  if (req.url?.startsWith("/sync/run")) {
+    const url = new URL(req.url, "http://127.0.0.1");
+    const execute = url.searchParams.get("execute") === "1";
+    const includeUnmapped = url.searchParams.get("includeUnmapped") === "1";
+    const result = await runProductionSync({
+      execute,
+      includeUnmapped
+    });
+    return sendJson(res, 200, {
+      ok: true,
+      ...result
     });
   }
 
   return sendJson(res, 404, {
     ok: false,
     error: "Not found"
+  });
+}
+
+const server = http.createServer((req, res) => {
+  handleRequest(req, res).catch((error) => {
+    sendJson(res, 500, {
+      ok: false,
+      error: error.message
+    });
   });
 });
 

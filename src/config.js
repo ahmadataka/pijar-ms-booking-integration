@@ -37,6 +37,10 @@ export const config = {
     database: process.env.ODOO_DATABASE || "",
     login: process.env.ODOO_LOGIN || "",
     password: process.env.ODOO_PASSWORD || ""
+  },
+  sync: {
+    lookbackDays: Number(process.env.SYNC_LOOKBACK_DAYS || 1),
+    lookaheadDays: Number(process.env.SYNC_LOOKAHEAD_DAYS || 2)
   }
 };
 

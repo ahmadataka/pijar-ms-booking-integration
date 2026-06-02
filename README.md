@@ -231,3 +231,57 @@ Fetch Odoo contacts:
 ```bash
 node src/scripts/fetchOdooContacts.js
 ```
+
+## Rollout Gaps
+
+See:
+
+- `ROLLOUT_GAPS.md`
+
+## Production Sync Runner
+
+This repo now includes a production-oriented runner that:
+
+- computes a default sync window from `.env`
+- prevents overlapping runs with a lock file
+- stores the most recent result in `data/last-production-sync.json`
+- can be triggered from the terminal or over HTTP
+
+### Environment
+
+```env
+SYNC_LOOKBACK_DAYS=1
+SYNC_LOOKAHEAD_DAYS=2
+```
+
+### Terminal usage
+
+Dry-run:
+
+```bash
+npm run sync:dry-run
+```
+
+Execute:
+
+```bash
+npm run sync:execute
+```
+
+### HTTP usage
+
+Start the service:
+
+```bash
+npm start
+```
+
+Then use:
+
+- `GET /health`
+- `GET /config-check`
+- `GET /sync/last-run`
+- `GET /sync/run`
+- `GET /sync/run?execute=1`
+
+Use `includeUnmapped=1` on `/sync/run` if you want skipped unmapped rooms included in the result.

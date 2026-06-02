@@ -1,7 +1,4 @@
-import { fetchPilotRooms } from "../rooms.js";
-import { indexRoomMappingsByEmail, loadRoomMappings } from "../roomMappings.js";
-import { indexUserMappingsByEmail, loadUserMappings } from "../userMappings.js";
-import { syncSingleRoom } from "../roomSync.js";
+import { runMappedRoomsSync } from "../mappedRoomsSync.js";
 
 function readArgs() {
   const [, , startIso, endIso, ...flags] = process.argv;
@@ -22,38 +19,18 @@ function readArgs() {
 
 async function main() {
   const { startIso, endIso, execute, includeUnmapped } = readArgs();
-  const rooms = await fetchPilotRooms();
-  const roomMappingsByEmail = indexRoomMappingsByEmail(await loadRoomMappings());
-  const userMappingsByEmail = indexUserMappingsByEmail(await loadUserMappings());
-
-  const selectedRooms = rooms.filter((room) => {
-    const mapping = roomMappingsByEmail.get((room.emailAddress || "").toLowerCase()) || null;
-    if (includeUnmapped) return true;
-    return Boolean(mapping?.odooRoomId);
+  const result = await runMappedRoomsSync({
+    startIso,
+    endIso,
+    execute,
+    includeUnmapped
   });
-
-  const results = [];
-  for (const room of selectedRooms) {
-    const mapping = roomMappingsByEmail.get((room.emailAddress || "").toLowerCase()) || null;
-    const result = await syncSingleRoom({
-      room,
-      roomMapping: mapping,
-      userMappingsByEmail,
-      startIso,
-      endIso,
-      execute
-    });
-    results.push(result);
-  }
 
   console.log(
     JSON.stringify(
       {
         mode: execute ? "execute" : "dry-run",
-        startIso,
-        endIso,
-        roomCount: results.length,
-        rooms: results
+        ...result
       },
       null,
       2
