@@ -29,6 +29,20 @@
       "employeeId": null
     },
     {
+      "microsoftEmail": "calvin@pijarfoundation.org",
+      "displayName": "Calvin Wilson Korompis",
+      "odooUserId": null,
+      "odooPartnerId": 84,
+      "employeeId": null
+    },
+    {
+      "microsoftEmail": "cindy@pijarfoundation.org",
+      "displayName": "Cindy Dayana",
+      "odooUserId": null,
+      "odooPartnerId": 95,
+      "employeeId": null
+    },
+    {
       "microsoftEmail": "hilwah@pijarfoundation.org",
       "displayName": "Hilwah",
       "odooUserId": null,
