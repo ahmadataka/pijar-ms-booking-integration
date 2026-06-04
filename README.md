@@ -12,6 +12,7 @@ This service will:
 
 - VM operations runbook: [VM_RUNBOOK.md](./VM_RUNBOOK.md)
 - rollout dependencies: [ROLLOUT_GAPS.md](./ROLLOUT_GAPS.md)
+- end-user booking guide: [USER_BOOKING_GUIDE.md](./USER_BOOKING_GUIDE.md)
 
 ## Execution Plan
 
