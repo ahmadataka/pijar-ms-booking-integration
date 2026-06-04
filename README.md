@@ -8,6 +8,11 @@ This service will:
 - persist or log the normalized result
 - later, call NBA Smart Office / Odoo API to provision physical access
 
+## Operations Docs
+
+- VM operations runbook: [VM_RUNBOOK.md](./VM_RUNBOOK.md)
+- rollout dependencies: [ROLLOUT_GAPS.md](./ROLLOUT_GAPS.md)
+
 ## Execution Plan
 
 ### This Week
