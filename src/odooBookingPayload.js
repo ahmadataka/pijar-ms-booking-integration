@@ -29,6 +29,12 @@ export function buildOdooBookingPayload(payloadRoom) {
       const guestContactIds = dedupePartnerIds(
         booking.accessUsers.map((user) => user.odooPartnerId)
       );
+      const missingGuestContacts = booking.accessUsers
+        .filter((user) => !user.odooPartnerId)
+        .map((user) => user.microsoftEmail);
+      const ready =
+        Boolean(payloadRoom.odooRoomId && booking.organizer.odooPartnerId) &&
+        missingGuestContacts.length === 0;
 
       return {
         source: {
@@ -37,13 +43,11 @@ export function buildOdooBookingPayload(payloadRoom) {
         },
         lastModifiedDateTime: booking.lastModifiedDateTime || null,
         isCancelled: Boolean(booking.isCancelled),
-        ready: Boolean(payloadRoom.odooRoomId && booking.organizer.odooPartnerId),
+        ready,
         missing: {
           room: !payloadRoom.odooRoomId,
           organizerPartner: !booking.organizer.odooPartnerId,
-          guestContacts: booking.accessUsers
-            .filter((user) => !user.odooPartnerId)
-            .map((user) => user.microsoftEmail)
+          guestContacts: missingGuestContacts
         },
         request: {
           name: booking.subject || "Microsoft Synced Booking",
