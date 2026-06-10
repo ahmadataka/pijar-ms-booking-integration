@@ -19,9 +19,47 @@ import {
 function isPastBooking(booking) {
   const end = booking.request?.end_datetime;
   if (!end) return false;
-  const parsed = new Date(end.replace(" ", "T"));
+  const parsed = parseDateTimeValue(end);
   if (Number.isNaN(parsed.getTime())) return false;
   return parsed.getTime() < Date.now();
+}
+
+function parseDateTimeValue(value) {
+  if (!value || typeof value !== "string") return new Date(Number.NaN);
+
+  if (/[zZ]$|[+-]\d{2}:\d{2}$/.test(value)) {
+    return new Date(value);
+  }
+
+  if (value.includes("T")) {
+    return new Date(value);
+  }
+
+  return new Date(value.replace(" ", "T"));
+}
+
+function isFutureOrActiveStateEntry(entry) {
+  const end = parseDateTimeValue(entry?.endDatetime || "");
+  if (Number.isNaN(end.getTime())) return false;
+  return end.getTime() >= Date.now();
+}
+
+function overlapsSyncWindow(entry, startIso, endIso) {
+  const start = parseDateTimeValue(entry?.startDatetime || "");
+  const end = parseDateTimeValue(entry?.endDatetime || "");
+  const windowStart = new Date(startIso);
+  const windowEnd = new Date(endIso);
+
+  if (
+    Number.isNaN(start.getTime()) ||
+    Number.isNaN(end.getTime()) ||
+    Number.isNaN(windowStart.getTime()) ||
+    Number.isNaN(windowEnd.getTime())
+  ) {
+    return false;
+  }
+
+  return start.getTime() <= windowEnd.getTime() && end.getTime() >= windowStart.getTime();
 }
 
 function buildStateEntry({ roomEmail, booking, odooBookingId }) {
@@ -32,6 +70,8 @@ function buildStateEntry({ roomEmail, booking, odooBookingId }) {
     odooBookingId,
     lastModifiedDateTime: booking.lastModifiedDateTime || null,
     requestFingerprint: buildRequestFingerprint(booking.request),
+    startDatetime: booking.request?.start_datetime || null,
+    endDatetime: booking.request?.end_datetime || null,
     subject: booking.request.name || null,
     isCancelled: Boolean(booking.request.state === "cancelled" || booking.isCancelled),
     lastSyncedAt: new Date().toISOString()
@@ -99,6 +139,8 @@ function buildFallbackStateEntry(roomEmail, booking) {
       description: booking.description,
       guest_contact_ids: booking.guestContactIds
     }),
+    startDatetime: booking.startDatetime,
+    endDatetime: booking.endDatetime,
     subject: booking.name || null,
     isCancelled: false,
     lastSyncedAt: null
@@ -130,6 +172,12 @@ export async function syncSingleRoom({
   );
 
   const actions = [];
+  const currentEventIds = new Set(
+    bookingPayload.bookings
+      .map((booking) => booking?.source?.microsoftEventId || null)
+      .filter(Boolean)
+  );
+
   for (const booking of bookingPayload.bookings) {
     const fallback = buildFallbackStateEntry(
       room.emailAddress,
@@ -202,6 +250,28 @@ export async function syncSingleRoom({
       action: "noop",
       source: booking.source,
       odooBookingId: existing.odooBookingId
+    });
+  }
+
+  const staleEntries = (state.bookings || []).filter((entry) => {
+    if (entry.roomEmail !== room.emailAddress) return false;
+    if (!entry.microsoftEventId || !entry.odooBookingId) return false;
+    if (currentEventIds.has(entry.microsoftEventId)) return false;
+    if (!overlapsSyncWindow(entry, startIso, endIso)) return false;
+    if (!isFutureOrActiveStateEntry(entry)) return false;
+    return true;
+  });
+
+  for (const entry of staleEntries) {
+    actions.push({
+      action: "delete",
+      reason: "missing-from-microsoft-window",
+      source: {
+        microsoftEventId: entry.microsoftEventId,
+        iCalUId: entry.iCalUId || null
+      },
+      odooBookingId: entry.odooBookingId,
+      existing: entry
     });
   }
 
