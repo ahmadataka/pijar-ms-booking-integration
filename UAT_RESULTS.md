@@ -32,12 +32,12 @@ Use together with:
 | UAT-06 | Unmapped room | Pass | 2026-06-10 | Outlook booking screenshot + targeted VM dry-run with `includeUnmapped: true` | Booking `UAT-06 Unmapped Room` for `Mataram` was blocked cleanly because the room has no Odoo mapping |
 | UAT-07 | Normal room repeated sync | Pass | 2026-06-10 | VM `last-production-sync.json` and dry-run output | Unchanged already-synced bookings returned `noop`, confirming idempotent behavior with no duplicate booking creation |
 | UAT-13 | Multiple mapped rooms | Pass | 2026-06-10 | Outlook booking screenshots + VM dry-run and execute output + Odoo bookings `227` and `228` | Two mapped-room bookings were created in one sync cycle without cross-room issues |
+| UAT-14 | Daily scheduled sync | Pass | 2026-06-10 | VM `crontab -l`, `cron.log`, and `last-production-sync.json` timestamps | Cron is running every 5 minutes and the production sync artifacts are updating without manual intervention |
 | UAT-08 | Approval room request created | Not Run |  |  |  |
 | UAT-09 | Approval room pending | Not Run |  |  |  |
 | UAT-10 | Approval room approved in Microsoft | Not Run |  |  |  |
 | UAT-11 | Approval room rejected in Microsoft | Not Run |  |  |  |
 | UAT-12 | Approval room canceled after approval | Not Run |  |  |  |
-| UAT-14 | Daily scheduled sync | Not Run |  |  |  |
 
 ## Detailed Result Template
 
@@ -249,10 +249,17 @@ Copy and fill one section per executed case.
 
 ### UAT-14
 
-- Result:
-- Date:
-- Microsoft booking evidence:
+- Result: Pass
+- Date: 2026-06-10
+- Microsoft booking evidence: not applicable for this infrastructure-only case
 - Sync evidence:
+  - VM `crontab -l` confirmed the installed schedule: `*/5 * * * * cd /root/pijar-ms-booking-integration && /usr/bin/npm run sync:execute >> /root/pijar-ms-booking-integration/cron.log 2>&1`
+  - VM `cron.log` showed recurring run markers at `2026-06-10T09:40:18Z`, `2026-06-10T09:45:15Z`, and `2026-06-10T09:50:19Z`
+  - VM `last-production-sync.json` recorded `ranAt: 2026-06-10T09:50:19.531Z`
+- Odoo booking ID: not applicable
+- Expected result: Scheduled sync runs without manual intervention and updates logs/results regularly
+- Actual result: Cron executed on schedule every 5 minutes, and both `cron.log` and `last-production-sync.json` were refreshed in line with the expected interval
+- Notes: This validates the operational heartbeat of the VM runner. It does not replace final deployment validation on the real Odoo target machine
 - Expected result:
 - Actual result:
 - Notes:
