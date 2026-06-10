@@ -28,9 +28,9 @@ Use together with:
 | UAT-02 | Normal room update | Pass | 2026-06-10 | Outlook update confirmation + VM dry-run output showing `replace` for Odoo booking `222` | Same Microsoft event updated from `17:00–17:30` to `17:30–18:00`, and sync correctly detected reconciliation was needed |
 | UAT-03 | Normal room cancellation | Pass | 2026-06-10 | Outlook cancellation + VM dry-run and execute after cancellation fix | Initial test exposed a cancellation reconciliation bug; after fix and retest, Odoo booking `223` was deleted successfully |
 | UAT-05 | Unmapped attendee | Pass | 2026-06-10 | Outlook booking screenshot + VM dry-run output showing `skip not-ready` | Booking `UAT-05 Unmapped Attendee` with `Hilwah` was blocked cleanly and did not create partial Odoo access |
+| UAT-06 | Unmapped room | Pass | 2026-06-10 | Outlook booking screenshot + targeted VM dry-run with `includeUnmapped: true` | Booking `UAT-06 Unmapped Room` for `Mataram` was blocked cleanly because the room has no Odoo mapping |
 | UAT-07 | Normal room repeated sync | Pass | 2026-06-10 | VM `last-production-sync.json` and dry-run output | Unchanged already-synced bookings returned `noop`, confirming idempotent behavior with no duplicate booking creation |
 | UAT-04 | Mapped attendee set | Not Run |  |  |  |
-| UAT-06 | Unmapped room | Not Run |  |  |  |
 | UAT-08 | Approval room request created | Not Run |  |  |  |
 | UAT-09 | Approval room pending | Not Run |  |  |  |
 | UAT-10 | Approval room approved in Microsoft | Not Run |  |  |  |
@@ -124,17 +124,19 @@ Copy and fill one section per executed case.
 
 ### UAT-06
 
-- Result:
-- Date:
-- Room:
-- Organizer:
+- Result: Pass
+- Date: 2026-06-10
+- Room: `Mataram -JKT-PIJAR HQ`
+- Organizer: `Ataka`
 - Attendees:
-- Microsoft booking evidence:
-- Sync evidence:
-- Odoo booking ID:
-- Expected result:
-- Actual result:
-- Notes:
+  - `Ataka`
+  - `Cazadira Fediva Tamzil`
+- Microsoft booking evidence: Outlook meeting screenshot titled `UAT-06 Unmapped Room`
+- Sync evidence: Targeted VM dry-run with `includeUnmapped: true` showed `action: "skip"` with `reason: "not-ready"` for the Microsoft event, and `missing.room` was `true`
+- Odoo booking ID: none created
+- Expected result: Sync skips or blocks the booking with a clear room mapping issue
+- Actual result: The booking was excluded from normal mapped-room production sync and, when checked in targeted include-unmapped mode, was explicitly blocked because the room has no Odoo mapping
+- Notes: This is the correct safety behavior. Operationally, unmapped rooms are not processed in the normal scheduled sync path at all
 
 ### UAT-07
 
