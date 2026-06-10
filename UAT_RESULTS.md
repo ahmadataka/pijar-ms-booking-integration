@@ -31,12 +31,12 @@ Use together with:
 | UAT-05 | Unmapped attendee | Pass | 2026-06-10 | Outlook booking screenshot + VM dry-run output showing `skip not-ready` | Booking `UAT-05 Unmapped Attendee` with `Hilwah` was blocked cleanly and did not create partial Odoo access |
 | UAT-06 | Unmapped room | Pass | 2026-06-10 | Outlook booking screenshot + targeted VM dry-run with `includeUnmapped: true` | Booking `UAT-06 Unmapped Room` for `Mataram` was blocked cleanly because the room has no Odoo mapping |
 | UAT-07 | Normal room repeated sync | Pass | 2026-06-10 | VM `last-production-sync.json` and dry-run output | Unchanged already-synced bookings returned `noop`, confirming idempotent behavior with no duplicate booking creation |
+| UAT-13 | Multiple mapped rooms | Pass | 2026-06-10 | Outlook booking screenshots + VM dry-run and execute output + Odoo bookings `227` and `228` | Two mapped-room bookings were created in one sync cycle without cross-room issues |
 | UAT-08 | Approval room request created | Not Run |  |  |  |
 | UAT-09 | Approval room pending | Not Run |  |  |  |
 | UAT-10 | Approval room approved in Microsoft | Not Run |  |  |  |
 | UAT-11 | Approval room rejected in Microsoft | Not Run |  |  |  |
 | UAT-12 | Approval room canceled after approval | Not Run |  |  |  |
-| UAT-13 | Multiple mapped rooms | Not Run |  |  |  |
 | UAT-14 | Daily scheduled sync | Not Run |  |  |  |
 
 ## Detailed Result Template
@@ -227,17 +227,25 @@ Copy and fill one section per executed case.
 
 ### UAT-13
 
-- Result:
-- Date:
-- Room:
-- Organizer:
+- Result: Pass
+- Date: 2026-06-10
+- Room: multiple mapped rooms:
+  - `Majapahit -JKT-PIJAR HQ`
+  - `Samudera Pasai -JKT-PIJAR HQ`
+- Organizer: `Ataka`
 - Attendees:
+  - `Ataka`
+  - `Cazadira Fediva Tamzil`
 - Microsoft booking evidence:
-- Sync evidence:
+  - Outlook booking screenshot titled `UAT-13 Multi Room A`
+  - Outlook booking screenshot titled `UAT-13 Multi Room B`
+- Sync evidence: VM `npm run sync:dry-run` showed `create` for both rooms in the same production sync window. VM `npm run sync:execute` then created both bookings successfully
 - Odoo booking ID:
-- Expected result:
-- Actual result:
-- Notes:
+  - `227` for `Samudera Pasai`
+  - `228` for `Majapahit`
+- Expected result: healthy rooms sync correctly in the same cycle, and only real mapping issues remain blocked
+- Actual result: both mapped-room bookings were created successfully in one run, each with the expected organizer and guest access records, while unrelated unmapped cases in other rooms remained blocked
+- Notes: This confirms the production runner can process multiple healthy mapped rooms together without cross-room interference
 
 ### UAT-14
 
