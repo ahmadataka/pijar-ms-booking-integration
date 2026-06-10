@@ -253,9 +253,24 @@ export async function syncSingleRoom({
     });
   }
 
-  const staleEntries = (state.bookings || []).filter((entry) => {
-    if (entry.roomEmail !== room.emailAddress) return false;
-    if (!entry.microsoftEventId || !entry.odooBookingId) return false;
+  const staleCandidateEntries = new Map();
+  for (const entry of state.bookings || []) {
+    if (entry.roomEmail !== room.emailAddress) continue;
+    if (!entry.microsoftEventId || !entry.odooBookingId) continue;
+    staleCandidateEntries.set(entry.microsoftEventId, entry);
+  }
+
+  for (const booking of odooBookings.filter((item) => item.roomId === roomMapping?.odooRoomId)) {
+    if (!booking.microsoftEventId) continue;
+    if (staleCandidateEntries.has(booking.microsoftEventId)) continue;
+
+    const fallback = buildFallbackStateEntry(room.emailAddress, booking);
+    if (fallback) {
+      staleCandidateEntries.set(booking.microsoftEventId, fallback);
+    }
+  }
+
+  const staleEntries = [...staleCandidateEntries.values()].filter((entry) => {
     if (currentEventIds.has(entry.microsoftEventId)) return false;
     if (!overlapsSyncWindow(entry, startIso, endIso)) return false;
     if (!isFutureOrActiveStateEntry(entry)) return false;
