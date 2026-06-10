@@ -262,10 +262,20 @@ export async function syncSingleRoom({
 
   for (const booking of odooBookings.filter((item) => item.roomId === roomMapping?.odooRoomId)) {
     if (!booking.microsoftEventId) continue;
-    if (staleCandidateEntries.has(booking.microsoftEventId)) continue;
-
     const fallback = buildFallbackStateEntry(room.emailAddress, booking);
-    if (fallback) {
+    if (!fallback) continue;
+
+    const existingEntry = staleCandidateEntries.get(booking.microsoftEventId);
+    if (existingEntry) {
+      staleCandidateEntries.set(booking.microsoftEventId, {
+        ...fallback,
+        ...existingEntry,
+        odooBookingId: existingEntry.odooBookingId || fallback.odooBookingId,
+        startDatetime: existingEntry.startDatetime || fallback.startDatetime,
+        endDatetime: existingEntry.endDatetime || fallback.endDatetime,
+        requestFingerprint: existingEntry.requestFingerprint || fallback.requestFingerprint
+      });
+    } else {
       staleCandidateEntries.set(booking.microsoftEventId, fallback);
     }
   }
